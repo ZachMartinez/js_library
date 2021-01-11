@@ -4,83 +4,77 @@ let myLibrary = []
 function Book({title, author, pages, read}) {
     this.title = title
     this.author = author
-    this.pages = pages
+    this.pages = pages 
     this.read = read || false
 }
 
 function addBookToLibrary(bookRecord) {
-    const newBook = new Book(bookRecord)
-    myLibrary.push(newBook)
+    const book = new Book(bookRecord)
+    myLibrary.push(book)
 }
 
-function removeBookFromLibrary(i) {
-    myLibrary.splice(i, 1)
+function addBooksToLibrary(libraryArray) {
+    libraryArray.forEach(book => {
+        addBookToLibrary(book)
+    })
+}
+
+function removeBookFromLibrary(index) {
+    myLibrary.splice(index, 1)
 }
 
 function createTestBooks() {
-    addBookToLibrary({
-        title: "War and Peace",
-        author: "Leo Tolstoy",
-        pages: 1400,
-        read: false
-    })
+    const testLibrary = [
+        {
+            title: "20000 Leagues Under The Sea",
+            author: "Jules Verne",
+            pages: 264,
+            read: true
+        },
+        {
+            title: "Around The World in 80 Days",
+            author: "Jules Verne",
+            pages: 130,
+            read: true
+        },
+        {
+            title: "Art of War",
+            author: "Sun Tzu",
+            pages: 110,
+            read: true
+        }
+    ]
 
-    addBookToLibrary({
-        title: "20000 Leagues Under The Sea",
-        author: "Jules Verne",
-        pages: 250,
-        read: false
-    })
-
-    addBookToLibrary({
-        title: "Hitchker's Guide to The Galaxy",
-        author: "Douglas Adams",
-        pages: 224,
-        read: false
-    })
+    addBooksToLibrary(testLibrary)
 }
 
-function renderLibrary(libraryArray, targetEl) {
+function renderLibraryTable(libraryArray, targetEl) {
     targetEl.innerHTML = ""
     libraryArray.forEach((book, i) => {
         const row = targetEl.insertRow()
-        row.setAttribute("data-index", i)
-        row.insertCell(-1).textContent = book.title
-        row.insertCell(-1).textContent = book.author
-        row.insertCell(-1).textContent = book.pages
+        row.insertCell(-1).textContent = book.title 
+        row.insertCell(-1).textContent = book.author 
+        row.insertCell(-1).textContent = book.pages 
         row.insertCell(-1).textContent = book.read
-        row.insertCell(-1).innerHTML = `<button class="deleteBtn">Delete</button>`
     })
 }
 
-function getBookDataFrom(form) {
-    const newBookData = {}
-    newBookData.title = form.title.value
-    newBookData.author = form.author.value
-    newBookData.pages = parseInt(form.pages.value)
-    newBookData.read =  form.read.checked
-    return newBookData
+function getDataFrom(form) {
+    const bookData = {}
+    bookData.title = form.title.value
+    bookData.author = form.author.value
+    bookData.pages = parseInt(form.pages.value)
+    bookData.read = form.read.checked
+    return bookData
 }
 
-function handleDeleteButtonClick(targetEl) {
-    const index = targetEl.closest("tr").dataset.index
-    removeBookFromLibrary(index)
-    renderLibrary(myLibrary, libraryTableBody)
+function handleSubmitEvent(e) {
+    e.preventDefault()
+    const newBookData = getDataFrom(e.target)
+    addBookToLibrary(newBookData)
+    renderLibraryTable(myLibrary, libraryTableBody)
 }
 
 document.addEventListener("submit", (e) => {
-    e.preventDefault()
-    const newBookData = getBookDataFrom(e.target)
-    addBookToLibrary(newBookData)
-    renderLibrary(myLibrary, libraryTableBody)
-})
-
-document.addEventListener("click", (e) => {
-    switch (e.target.classList.value) {
-        case "deleteBtn":
-            handleDeleteButtonClick(e.target)
-            break
-        default:
-            break
-    }
+    handleSubmitEvent(e)
 })
